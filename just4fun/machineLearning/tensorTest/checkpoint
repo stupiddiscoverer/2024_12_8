@@ -1,0 +1,2 @@
+model_checkpoint_path: "discriminator.hpy5"
+all_model_checkpoint_paths: "discriminator.hpy5"

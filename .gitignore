@@ -1,0 +1,7 @@
+*.pth
+*.iml
+*.xml
+*.gz
+*.exe
+just4fun/.idea/
+*.pyc

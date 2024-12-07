@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flip Game</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            padding: 20px;
+            background-color: #f4f4f9;
+            display: flex;
+            justify-content: space-between;
+            height: 100vh;
+        }
+
+        .controls {
+            margin-bottom: 20px;
+            font-size: 18px;
+        }
+
+        .controls input {
+            padding: 5px;
+            font-size: 16px;
+            margin-right: 10px;
+        }
+
+        .controls button {
+            padding: 8px 15px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        .game-container {
+            flex-grow: 1;
+            text-align: center;
+        }
+
+        .grid-container {
+            display: grid;
+            grid-gap: 2px;
+            margin-top: 20px;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .cell {
+            width: 40px;
+            height: 40px;
+            border: 1px solid #ccc;
+            cursor: pointer;
+            background-color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-weight: bold;
+            font-size: 20px;
+        }
+
+        .cell.on {
+            background-color: black;
+        }
+
+        .cell.off {
+            background-color: white;
+        }
+
+        .history {
+            width: 250px;
+            padding: 10px;
+            background-color: #f0f0f0;
+            border-left: 1px solid #ccc;
+            text-align: left;
+            height: 100%;
+            overflow-y: auto;
+        }
+
+        .history h3 {
+            margin-top: 0;
+        }
+
+        .history ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .history li {
+            margin: 5px 0;
+            cursor: pointer;
+            padding: 3px;
+            border-radius: 5px;
+        }
+
+        .history li:hover {
+            background-color: #ddd;
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="history">
+        <h3>Move History:</h3>
+        <ul id="historyList">
+            <!-- Moves will be listed here -->
+        </ul>
+    </div>
+
+    <div class="game-container">
+        <h1>Flip Game</h1>
+
+        <div class="controls">
+            <label for="rows">Rows:</label>
+            <input type="number" id="rows" value="3" min="1" max="50">
+            <label for="cols">Columns:</label>
+            <input type="number" id="cols" value="3" min="1" max="50">
+            <button onclick="initializeGame()">New Game</button>
+            <button id="setMode" onclick="toggleSetupMode()">Enter Setup Mode</button>
+            <button id="setPureColor" onclick="setAllBlack()" disabled>Set All Black</button>
+        </div>
+
+        <div id="gridContainer" class="grid-container"></div>
+    </div>
+
+    <script>
+        let grid = [];
+        let rows = 5;
+        let cols = 5;
+        let moveHistory = [];  // To store the history of moves
+        let clickCount = 0;  // To count the number of valid clicks during the game
+        let isSetupMode = false;  // Flag to track if we're in setup mode
+        let pureColor = 1;
+
+        // Function to initialize the game
+        function initializeGame() {
+            gameMode();
+            rows = parseInt(document.getElementById("rows").value);
+            cols = parseInt(document.getElementById("cols").value);
+            grid = createRandomGrid(rows, cols);
+            moveHistory = [];  // Clear the history when starting a new game
+            clickCount = 0;  // Reset click count
+            renderGrid();
+            updateHistoryDisplay();  // Update history display
+        }
+
+        // Function to create a random grid of 0s and 1s
+        function createRandomGrid(rows, cols) {
+            const grid = [];
+            for (let i = 0; i < rows; i++) {
+                const row = [];
+                for (let j = 0; j < cols; j++) {
+                    row.push(Math.random() < 0.5 ? 0 : 1); // 0 = off, 1 = on
+                }
+                grid.push(row);
+            }
+            return grid;
+        }
+
+        // Function to render the grid
+        function renderGrid() {
+            const container = document.getElementById("gridContainer");
+            container.innerHTML = ''; // Clear previous grid
+
+            container.style.gridTemplateRows = `repeat(${rows}, 40px)`;
+            container.style.gridTemplateColumns = `repeat(${cols}, 40px)`;
+
+            // Create the grid elements
+            for (let i = 0; i < rows; i++) {
+                for (let j = 0; j < cols; j++) {
+                    const cell = document.createElement("div");
+                    cell.classList.add("cell", grid[i][j] === 1 ? "on" : "off");
+                    cell.setAttribute("data-row", i);
+                    cell.setAttribute("data-col", j);
+                    cell.onclick = () => handleCellClick(i, j);
+                    container.appendChild(cell);
+                }
+            }
+        }
+
+        function gameClick(row, col) {
+            grid[row][col] ^= 1;
+            if (row > 0) grid[row - 1][col] ^= 1; // top
+            if (row < rows - 1) grid[row + 1][col] ^= 1; // bottom
+            if (col > 0) grid[row][col - 1] ^= 1; // left
+            if (col < cols - 1) grid[row][col + 1] ^= 1; // right
+            renderGrid();
+        }
+
+        // Function to handle cell clicks
+        function handleCellClick(row, col) {
+            if (isSetupMode) {
+                // If in setup mode, toggle the cell without recording the move
+                grid[row][col] ^= 1;
+                renderGrid(); // Re-render grid after click
+            } else {
+                gameClick(row, col);
+                // Increment click count
+                clickCount++;
+
+                // Check if the move already exists in the history
+                const moveIndex = moveHistory.findIndex(move => move.row === row && move.col === col);
+                if (moveIndex !== -1) {
+                    // If the move exists, remove it and all subsequent identical moves
+                    moveHistory = moveHistory.filter((move, index) => !(index === moveIndex));
+                } else {
+                    // Otherwise, add the new move to the history
+                    moveHistory.push({ row, col });
+                }
+
+                updateHistoryDisplay(); // Update history display after each move
+
+                // Check if the grid is all white (all 0s)
+                if (checkAllWhite()) {
+                    // grid = Array.from({ length: rows }, () => Array(cols).fill(0));  // Create full white grid
+                    setTimeout(() => {
+                        alert(`Congratulations! You've completed the game in ${clickCount} clicks.`);
+                    }, 100); // Wait a bit before showing the alert
+                }
+            }
+        }
+
+        // Function to check if the grid is all white (all cells are 0)
+        function checkAllWhite() {
+            for (let i = 0; i < rows; i++) {
+                for (let j = 0; j < cols; j++) {
+                    if (grid[i][j] !== 0) {
+                        return false; // Return false if any cell is not white
+                    }
+                }
+            }
+            return true; // Return true if all cells are white
+        }
+
+        // Function to update the history display
+        function updateHistoryDisplay() {
+            const historyList = document.getElementById("historyList");
+            historyList.innerHTML = ''; // Clear existing history
+
+            if (moveHistory.length === 0) {
+                historyList.innerHTML = "<li>No moves yet.</li>";
+            } else {
+                moveHistory.forEach((move, index) => {
+                    const li = document.createElement("li");
+                    li.textContent = `Move ${index + 1}: (${move.row}, ${move.col})`;
+                    li.onclick = () => handleHistoryClick(index); // Add click listener to history item
+                    historyList.appendChild(li);
+                });
+            }
+        }
+
+        // Function to handle history item click
+        function handleHistoryClick(index) {
+            const move = moveHistory[index];
+            gameClick(move.row, move.col);
+            // Remove the history item that was clicked
+            moveHistory.splice(index, 1);
+            updateHistoryDisplay(); // Update the history display
+        }
+
+        function gameMode() {
+            pureColor = 1;
+            isSetupMode = false;
+            const setMode = document.getElementById("setMode");
+            const setPureColor = document.getElementById("setPureColor");
+            setMode.textContent = "Enter Setup Mode";
+            setPureColor.textContent = "Set All Black";
+            setPureColor.disabled = true;
+            setPureColor.style.visibility = "hidden";
+        }
+        function setMode() {
+            const setMode = document.getElementById("setMode");
+            const setPureColor = document.getElementById("setPureColor");
+            setMode.textContent = "Finish Setup";
+            setPureColor.disabled = false;
+            setPureColor.style.visibility = "visible";
+        }
+
+        // Toggle setup mode
+        function toggleSetupMode() {
+            isSetupMode = !isSetupMode;
+            if (isSetupMode) {
+                setMode();
+            } else {
+                gameMode();
+            }
+        }
+
+        // Function to set the entire grid to black (1)
+        function setAllBlack() {
+            grid = Array.from({ length: rows }, () => Array(cols).fill(pureColor)); // Set all cells to black
+            renderGrid();  // Re-render the grid
+            pureColor = pureColor ^ 1;
+            const setPureColor = document.getElementById("setPureColor");
+            if (pureColor === 0) {
+                setPureColor.textContent = "Set All White";
+            } else {
+                setPureColor.textContent = "Set All Black";
+            }
+        }
+
+        // Initialize the game when the page loads
+        window.onload = initializeGame;
+    </script>
+
+</body>
+</html>

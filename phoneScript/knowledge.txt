@@ -1,0 +1,15 @@
+adb devices 运行adb，并查看设备
+appium 运行appium
+打开Appium Inspector可以进行调试
+
+adb shell
+    查看appPackage和appActivity
+    dumpsys activity | grep mCurrentFocus
+
+    查看platform版本号和api版本号
+    getprop ro.build.version.release
+    getprop ro.build.version.sdk
+
+赫兹：com.immomo.vchat/com.immomo.vchat.activity.HomeActivity
+抖音：com.ss.android.ugc.aweme/com.ss.android.ugc.aweme.splash.SplashActivity
+快手：com.smile.gifmaker/com.yxcorp.gifshow.HomeActivity

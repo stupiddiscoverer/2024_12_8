@@ -1,0 +1,109 @@
+C:\Users\张三>appium server -h
+usage: index.js server [-h] [--address ADDRESS] [--allow-cors] [--allow-insecure ALLOW_INSECURE]
+                       [--base-path BASE_PATH] [--callback-address CALLBACK_ADDRESS] [--callback-port CALLBACK_PORT]
+                       [--debug-log-spacing] [--default-capabilities DEFAULT_CAPABILITIES]
+                       [--deny-insecure DENY_INSECURE] [--keep-alive-timeout KEEP_ALIVE_TIMEOUT] [--local-timezone]
+                       [--log LOG] [--log-filters LOG_FILTERS] [--log-level LOG_LEVEL] [--log-no-colors]
+                       [--log-timestamp] [--plugins-import-chunk-size PLUGINS_IMPORT_CHUNK_SIZE]
+                       [--drivers-import-chunk-size DRIVERS_IMPORT_CHUNK_SIZE] [--long-stacktrace] [--no-perms-check]
+                       [--nodeconfig NODECONFIG] [--port PORT] [--relaxed-security] [--session-override]
+                       [--strict-caps] [--tmp TMP] [--trace-dir TRACE_DIR] [--use-drivers USE_DRIVERS]
+                       [--use-plugins USE_PLUGINS] [--webhook WEBHOOK] [--ssl-cert-path SSL_CERT_PATH]
+                       [--ssl-key-path SSL_KEY_PATH] [--shell] [--show-build-info] [--show-config]
+                       [--config CONFIGFILE]
+
+optional arguments:
+  -h, --help            show this help message and exit
+  --address ADDRESS, -a ADDRESS
+                        IPv4/IPv6 address or a hostname to listen on
+  --allow-cors          Whether the Appium server should allow web browser connections from any host
+  --allow-insecure ALLOW_INSECURE
+                        Set which insecure features are allowed to run in this server's sessions. Features are defined
+                        on a driver level; see documentation for more details. Note that features defined via
+                        "deny-insecure" will be disabled, even if also listed here. If string, a path to a text file
+                        containing policy or a comma-delimited list.
+  --base-path BASE_PATH, -pa BASE_PATH
+                        Base path to use as the prefix for all webdriver routes running on the server
+  --callback-address CALLBACK_ADDRESS, -ca CALLBACK_ADDRESS
+                        Callback IP address (default: same as "address")
+  --callback-port CALLBACK_PORT, -cp CALLBACK_PORT
+                        Callback port (default: same as "port")
+  --debug-log-spacing   Add exaggerated spacing in logs to help with visual inspection
+  --default-capabilities DEFAULT_CAPABILITIES, -dc DEFAULT_CAPABILITIES
+                        Set the default desired capabilities, which will be set on each session unless overridden by
+                        received capabilities. If a string, a path to a JSON file containing the capabilities, or raw
+                        JSON.
+  --deny-insecure DENY_INSECURE
+                        Set which insecure features are not allowed to run in this server's sessions. Features are
+                        defined on a driver level; see documentation for more details. Features listed here will not
+                        be enabled even if also listed in "allow-insecure", and even if "relaxed-security" is enabled.
+                        If string, a path to a text file containing policy or a comma-delimited list.
+  --keep-alive-timeout KEEP_ALIVE_TIMEOUT, -ka KEEP_ALIVE_TIMEOUT
+                        Number of seconds the Appium server should apply as both the keep-alive timeout and the
+                        connection timeout for all requests. A value of 0 disables the timeout.
+  --local-timezone      Use local timezone for timestamps
+  --log LOG, -g LOG     Also send log output to this file
+  --log-filters LOG_FILTERS
+                        One or more log filtering rules
+  --log-level LOG_LEVEL
+                        Log level (console[:file])
+  --log-no-colors       Do not use color in console output
+  --log-timestamp       Show timestamps in console output
+  --plugins-import-chunk-size PLUGINS_IMPORT_CHUNK_SIZE
+                        The maximum amount of plugins that could be imported in parallel on server startup
+  --drivers-import-chunk-size DRIVERS_IMPORT_CHUNK_SIZE
+                        The maximum amount of drivers that could be imported in parallel on server startup
+  --long-stacktrace     Add long stack traces to log entries. Recommended for debugging only.
+  --no-perms-check      Skip various permission checks on the server startup if set to true
+  --nodeconfig NODECONFIG
+                        Path to configuration JSON file to register Appium as a node with Selenium Grid 3; otherwise
+                        the configuration itself
+  --port PORT, -p PORT  Port to listen on
+  --relaxed-security    Disable additional security checks, so it is possible to use some advanced features, provided
+                        by drivers supporting this option. Only enable it if all the clients are in the trusted
+                        network and it's not the case if a client could potentially break out of the session sandbox.
+                        Specific features can be overridden by using "deny-insecure"
+  --session-override    Enables session override (clobbering)
+  --strict-caps         Cause sessions to fail if desired caps are sent in that Appium does not recognize as valid for
+                        the selected device
+  --tmp TMP             Absolute path to directory Appium can use to manage temp files. Defaults to C:\Windows\Temp on
+                        Windows and /tmp otherwise.
+  --trace-dir TRACE_DIR
+                        Absolute path to directory Appium can use to save iOS instrument traces; defaults to
+                        <tmp>/appium-instruments
+  --use-drivers USE_DRIVERS
+                        A list of drivers to activate. Can be a comma-delimited string or path to CSV file. By
+                        default, all installed drivers will be activated. Windows environments may require wrapping
+                        the comma-delimited string with quotes to escape the comma.
+  --use-plugins USE_PLUGINS
+                        A list of plugins to activate. Can be a comma-delimited string, path to CSV file, or the
+                        string "all" to use all installed plugins. Windows environments may require wrapping the
+                        comma-delimited string with quotes to escape the comma.
+  --webhook WEBHOOK, -G WEBHOOK
+                        Also send log output to this http listener
+  --ssl-cert-path SSL_CERT_PATH
+                        Full path to the .cert file if TLS is used. Must be provided together with "ssl-key-path"
+  --ssl-key-path SSL_KEY_PATH
+                        Full path to the .key file if TLS is used. Must be provided together with "ssl-cert-path"
+  --shell               Enter REPL mode
+  --show-build-info     Show info about the Appium build and exit
+  --show-config         Show the current Appium configuration and exit
+  --config CONFIGFILE   Explicit path to Appium configuration file
+
+
+
+
+C:\Users\张三>appium driver -h
+usage: index.js driver [-h] {list,ls,install,uninstall,update,run} ...
+
+positional arguments:
+  {list,ls,install,uninstall,update,run}
+    list (ls)           List available and installed drivers
+    install             Install a driver
+    uninstall           Uninstall a driver
+    update              Update installed drivers to the latest version
+    run                 Run a script (defined inside the driver's package.json under the “scripts” field inside the
+                        “appium” field) from an installed driver
+
+optional arguments:
+  -h, --help            show this help message and exit

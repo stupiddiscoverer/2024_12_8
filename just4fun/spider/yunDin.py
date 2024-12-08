@@ -148,8 +148,8 @@ def printIfPerfect(hero_list=None, synergy_set=None):
         for h in hero_list:
             addSynergy(synergy_set, heroes[h])
     if isPerfect(synergy_set) == 1:
-        text = str(hero_list) + "\n"
-        # text = ''
+        # text = str(hero_list) + "\n"
+        text = ''
         coin = 0
         for h in hero_list:
             text += heroes[h].name + str(heroes[h].price) + ' '
@@ -164,10 +164,10 @@ def printIfPerfect(hero_list=None, synergy_set=None):
         if hero_list not in perfect_list:
             perfect_list.add(hero_list)
         # else:
-            text = str(hero_list) + '\n' + text
+        #     text = str(hero_list) + '\n' + text
             print(text, end='')
-            # with open("perfect_" + str(perfect_num) + '.txt', 'a') as f:
-            #     f.write(text)
+            with open("perfect_" + str(perfect_num) + '.txt', 'a') as f:
+                f.write(text)
 
 
 # 谁能想到，多年前我竟然能写出如此简洁的组合函数，虽然是用递归
@@ -404,8 +404,8 @@ if __name__ == '__main__':
     # print(same_list)
     perfect_num = 8
     # perfectComb(perfect_num)
-    C(4, [0]*4)
-    # perfectCombSmart(n=perfect_num)
+    # C(4, [0]*4)
+    perfectCombSmart(n=perfect_num)
     print(len(perfect_list))
     # printIfPerfect([0,1,3,14,31,49,53,56], {})
     # ii = 0

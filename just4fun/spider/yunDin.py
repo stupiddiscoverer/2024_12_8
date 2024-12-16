@@ -25,15 +25,13 @@ class Hero:
     jobs = []
     isChosen = 0
     price = 0
-    index = 0
 
-    def __init__(self, name='', title='', price=0, index=0):
+    def __init__(self, name='', title='', price=0):
         self.price = price
         self.name = name
         self.title = title
         self.jobIndexes = []
         self.jobs = []
-        self.index = index
 
     def addJob(self, job=''):
         self.jobs.append(job)
@@ -82,16 +80,14 @@ class Synergy:
 def extractHeros(html=''):
     soup = BeautifulSoup(html, 'html.parser')
     elements = soup.select(".champion-item-big")
-    index = 0
     for e in elements:
         title, name = e.select(".name")[0].text.strip().split(' ')
         price = int(e.select(".price")[0].text.strip()[0:2])
-        hero = Hero(name, title, price, index)
+        hero = Hero(name, title, price)
         jobs = e.select(".race-job-name")
         for j in jobs:
             hero.addJob(j.text.strip())
         heroes.append(hero)
-        index += 1
 
 
 def extractSynergies(html=''):
@@ -141,7 +137,9 @@ def isPerfect(synergy_set={}):
 
 
 perfect_list = set()
+xx = 0
 def printIfPerfect(hero_list=None, synergy_set=None):
+    global xx
     # 字典类型，key:value, 只能按key遍历，synergy_set[key]取对应value
     if synergy_set is None or synergy_set == {}:
         synergy_set = {}
@@ -164,7 +162,8 @@ def printIfPerfect(hero_list=None, synergy_set=None):
         if hero_list not in perfect_list:
             perfect_list.add(hero_list)
         # else:
-        #     text = str(hero_list) + '\n' + text
+            xx += 1
+            text = str(hero_list) + '\n' + text
             print(text, end='')
             with open("perfect_" + str(perfect_num) + '.txt', 'a') as f:
                 f.write(text)
@@ -369,20 +368,23 @@ def findAllSameSynergyHero():
 def start():
     # print(synergies[12].name, synergies[12].nums)
 
-    i = 0
-    for s in synergies:
+    for i in range(len(synergies) - 1, -1, -1):  # 倒序删除不会影响前面的序号
+        s = synergies[i]
         s.initialHeroIndexes()
-        # if len(s.heroIndexes) == 0:
-        #     synergies.remove(s)
-        # else:
+        if len(s.heroIndexes) <= 1:
+            del synergies[i]
+            # synergies.remove(s)
+            continue
         print(i, s.name, s.heroIndexes, s.nums)
-        i += 1
+    print(len(synergies))
     print("------------------------------------")
-    i = 0
-    for h in heroes:
+    for i in range(len(heroes)-1, -1, -1):
+        h = heroes[i]
+        if len(h.jobs) <= 1:
+            heroes.remove(h)
+            continue
         h.initialJobIndexes(synergies)
         print(i, h.name, h.jobIndexes)
-        i += 1
 
 
 if __name__ == '__main__':
@@ -401,12 +403,13 @@ if __name__ == '__main__':
     start()
     same_list = []
     findAllSameSynergyHero()
-    # print(same_list)
+    print(same_list)
     perfect_num = 8
     # perfectComb(perfect_num)
     # C(4, [0]*4)
     perfectCombSmart(n=perfect_num)
     print(len(perfect_list))
+    print(xx)
     # printIfPerfect([0,1,3,14,31,49,53,56], {})
     # ii = 0
     # for h in heroes:

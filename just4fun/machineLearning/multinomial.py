@@ -1,7 +1,7 @@
 import numpy
-from machineLearning import funcSet
+from just4fun.machineLearning import funcSet
 
-from machineLearning import neuralNetwork
+from just4fun.machineLearning import neuralNetwork
 
 
 class MultinomialLine:

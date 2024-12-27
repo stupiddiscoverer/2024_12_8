@@ -1,7 +1,7 @@
 import tensorflow as tf
 from tensorflow import keras
 
-from machineLearning.selfMultiplyNet import generateTrainData
+from just4fun.machineLearning.selfMultiplyNet import generateTrainData
 
 
 class DotProductLayer(keras.layers.Layer):

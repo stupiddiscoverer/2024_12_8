@@ -135,22 +135,28 @@ def onlyGanTrain():
 def adversarialTrain():
     # 对抗训练某一个网络收敛过快会导致这个网络无法更新，无法学习，因为损失值很小，
     # 导致另一个网络不管怎么努力总是不是该网络的对手，无法学到有用，有指导作用的知识
+    print(f"Using device: {device}")
+    ganNet1.to(device)
+    disNet1.to(device)
     for epoch in range(5):
         gan_loss = 0.0
         dis_loss = 0.0
-        mosaic = nn.functional.one_hot(torch.ones(batchSize, dtype=torch.long) * 10, num_classes=11).float()
+        mosaic = nn.functional.one_hot(torch.ones(batchSize, dtype=torch.long) * 10, num_classes=11).float().to(device)
         # print(mosaic)
         count = 0
         for i, data in enumerate(trainloader, 0):
             images, labels = data
             if images.shape[0] != batchSize:
                 break
-            labelHots = nn.functional.one_hot(labels, num_classes=11).float()
+            images = images.to(device)
+            labels = labels.to(device)
+            labelHots = nn.functional.one_hot(labels, num_classes=11).float().to(device)
             optimizerGan.zero_grad()
             optimizerDis.zero_grad()
 
             disNet1.requires_grad_(False)
             randInputs = torch.rand((batchSize, 11)) / 10
+            randInputs = randInputs.to(device)
             ganOutputs = ganNet1(labelHots + randInputs)
             ganOutputs1 = disNet1(ganOutputs)
             lossGan = criterion(ganOutputs1, labelHots)
@@ -163,7 +169,7 @@ def adversarialTrain():
             ganOutputs = ganNet1(labelHots + randInputs).detach()
             ganOutputs1 = disNet1(ganOutputs)
             disOutput1 = disNet1(images)
-            lossDis = criterion(ganOutputs1, mosaic) * 0.2 + criterion(disOutput1, labelHots)
+            lossDis = criterion(ganOutputs1, (mosaic+labelHots)/2) + criterion(disOutput1, labelHots)
             # 先注重提高鉴别器对真实图片的鉴别能力，使得鉴别器更像人，再提高假图片的鉴别能力，这样就可以一步步提高生成器造假能力？
             # 实际效果并没有提高，生成器比重最佳就是0.2，0.1和0.3都不行，过低导致生成器进化过快，学不到东西，过高导致鉴别器进化过快
             if lossDis.item() >= lossGan.item() or count < 10:
@@ -239,30 +245,36 @@ def testGan(ganPth='gan_net.pth', disPth='dis_net.pth'):
     disNet1.load_state_dict(torch.load(disPth))
     for i, data in enumerate(trainloader, 0):
         images, labels = data
+        images = images.to(device)
+        labels = labels.to(device)
         disOut = disNet1(images[0])
         print(labels[0], disOut)
         ganOut = ganNet1(disOut)
         # print(ganOut.shape)
         print(disNet1(ganOut))
+        ganOut = ganOut.to(torch.device("cpu"))
         plt.imshow(ganOut.detach().numpy()[0][0], cmap='gray')
         plt.show()
         break
     for i in range(100):
-        oneHot = nn.functional.one_hot(torch.tensor(i % 10), num_classes=11).float()
+        oneHot = nn.functional.one_hot(torch.tensor(i % 10), num_classes=11).float().to(device)
         randInputs = torch.rand((1, 11)) / 10
+        randInputs = randInputs.to(device)
         plt.subplot(10, 10, i + 1)
-        plt.imshow(ganNet1(oneHot + randInputs).detach().numpy()[0][0], cmap='gray')
+        ganOut = ganNet1(oneHot + randInputs).to(torch.device("cpu"))
+        plt.imshow(ganOut.detach().numpy()[0][0], cmap='gray')
     plt.show()
 
     return
 
 
 if __name__ == '__main__':
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     # print(torch.rand((1, 11)) / 10)
-    # adversarialTrain()
+    adversarialTrain()
     # testGan()
-    trainDiscriminator()
+    # trainDiscriminator()
     # onlyGanTrain()
     # testGan('onlyGan.pth', 'mnist_net.pth')
-    # testGan()
-    testDiscriminator()
+    testGan()
+    # testDiscriminator()

@@ -1,6 +1,5 @@
 import math
 import random
-from machineLearning import NormLayer
 import numpy
 
 
@@ -24,7 +23,6 @@ class selfMultiplyLayer:
         self.b = numpy.zeros((1, inputLen))
         self.cRate = 1
         self.bRate = 1
-        self.normlayer = NormLayer.NormLayer()
 
     def printSelf(self):
         print(self.matrix)
@@ -36,14 +34,12 @@ class selfMultiplyLayer:
         self.inputs = inputs
         # y = x * (wx + b) + c = wx^2 + bx + c  足以模拟任意二次函数
         self.tempOut = numpy.dot(inputs, self.matrix)
-        # self.tempOut = self.normlayer.forward(self.tempOut)
         self.outputs = inputs * self.tempOut + self.b
         self.outputs = self.outputs / numpy.sqrt(self.inputLen)
 
     def backpropagation(self, d_loss_o):
         self.b -= numpy.sum(d_loss_o, axis=0)/len(self.inputs) * self.studyRate * self.cRate
         d_loss_tempOut = d_loss_o * self.inputs / numpy.sqrt(self.inputLen)
-        # d_loss_tempOut = self.normlayer.backward(d_loss_tempOut)
         self.b -= numpy.sum(d_loss_tempOut, axis=0)/len(self.inputs) * self.studyRate * self.bRate
         d_loss_in = self.tempOut * d_loss_o + numpy.dot(d_loss_tempOut, self.matrix.T)
         self.matrix -= numpy.dot(d_loss_tempOut.T, self.inputs) / len(self.inputs) * self.studyRate

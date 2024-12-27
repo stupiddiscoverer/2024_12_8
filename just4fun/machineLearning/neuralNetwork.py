@@ -2,8 +2,8 @@ import math
 
 import numpy
 
-from machineLearning import funcSet
-from machineLearning import selfMultiplyNet
+from just4fun.machineLearning import funcSet
+from just4fun.machineLearning import selfMultiplyNet
 
 
 # def get_d_loss_o_abs(errOut, corOut):

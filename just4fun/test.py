@@ -5,7 +5,6 @@ import numpy
 import numpy as np
 
 
-
 def get_angles(pos, i, d_model):
     angle_rates = 1 / np.power(10000, (2 * (i//2)) / np.float32(d_model))
     return pos * angle_rates
@@ -84,8 +83,20 @@ def decrypt_aes_128_cbc(key, iv, ciphertext):
 
 
 if __name__ == '__main__':
-    arr1 = [i for i in range(10)]
-    print(numpy.array(arr1).reshape(2, 5))
-    a = numpy.array([[-1, -2], [0.3, 4]])
-    print(numpy.abs(a - a**2))
+    num_big = 10000
+    arr1 = numpy.random.randn(num_big)*2+1
+    arr2 = numpy.random.randn(num_big)+1
+    print(numpy.std(arr1), numpy.average(arr1))
+    print(numpy.std(arr2), numpy.average(arr2))
+    arr3 = arr1*arr2
+    print(numpy.std(arr3), numpy.average(arr3))
+    print('-----------------------')
+    random1 = np.random.uniform(1, 2, num_big) * 8 - 11
+    random2 = np.random.uniform(1, 2, num_big) * 4 - 5
+    print(numpy.std(random1), numpy.average(random1))
+    print(numpy.std(random2), numpy.average(random2))
+    random3 = random1*random2
+    print(numpy.std(random3), numpy.average(random3))
+    # say_hello()
+
     # drawGuss()

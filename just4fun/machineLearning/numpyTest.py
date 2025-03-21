@@ -5,20 +5,59 @@ import numpy
 import pandas
 from PIL import Image
 from numpy import clip
+from just4fun.scripts.utils import getDirectory
 
 
-def pictureGenerate():
-    img = Image.open('E:\PythonProjects\pictures\截图1.png', 'r')
-    print(img)
-    outputPath = 'E:/PythonProjects/pictures/'
-    arr = numpy.array(img)
-    print(type(arr))
-    print(arr.shape)
-    k = 50
-    u_r, sigma_r, v_r = numpy.linalg.svd(arr[:, :, 0])
-    u_g, sigma_g, v_g = numpy.linalg.svd(arr[:, :, 1])
-    u_b, sigma_b, v_b = numpy.linalg.svd(arr[:, :, 2])
-    plt.figure(figsize=(8, 8), facecolor='w')
+import cv2
+
+def imgShow():
+    imgPath = 'C:\\Users\张三\Pictures\IMG_20231114_092847.jpg'
+    # 读取图片
+    image = cv2.imread(imgPath)  # 替换成你的图片路径
+    image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)  # OpenCV 读取 BGR，需要转换为 RGB
+
+    print(image.dtype)
+
+    # 分解通道
+    R, G, B = cv2.split(image)
+    print(cv2.__file__)
+
+    # 创建单通道显示（仅保留一个颜色通道，其他设为 0）
+    zero_channel = numpy.zeros_like(R)  # 创建全黑的单通道
+
+    red_image = numpy.stack([R, zero_channel, zero_channel], axis=2)  # 仅保留红色通道
+    green_image = numpy.stack([zero_channel, G, zero_channel], axis=2)  # 仅保留绿色通道
+    blue_image = numpy.stack([zero_channel, zero_channel, B], axis=2)  # 仅保留蓝色通道
+
+    # 显示原图和分解后的图像
+    fig, axes = plt.subplots(1, 7, figsize=(12, 4))
+    axes[0].imshow(image)
+    axes[0].set_title("Original Image")
+
+    axes[1].imshow(red_image)
+    axes[1].set_title("Red Channel")
+
+    axes[2].imshow(green_image)
+    axes[2].set_title("Green Channel")
+
+    axes[3].imshow(blue_image)
+    axes[3].set_title("Blue Channel")
+
+    axes[4].imshow(red_image + green_image)
+    axes[4].set_title("rg=yellow")
+
+    axes[5].imshow(red_image + blue_image)
+    axes[5].set_title("rb=purple")
+
+    axes[6].imshow(blue_image + green_image)
+    axes[6].set_title("gb=cyan")
+
+    # 关闭坐标轴
+    for ax in axes:
+        ax.axis("off")
+
+    plt.show()
+
 
 
 def numpy2():
@@ -193,4 +232,4 @@ def drawIm():
 
 
 if __name__ == '__main__':
-    pictureGenerate()
+    imgShow()

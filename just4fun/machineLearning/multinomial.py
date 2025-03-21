@@ -129,9 +129,9 @@ class MultinomialNet:
 
 def test1():
     # inputs = numpy.array([[1, 0], [0, 1], [1, 1], [0, 0], [2, 1], [2, 1], [1, 2], [2, 2]])
-    inputs = numpy.random.random((32, 2)) * 4 - 2
+    inputs = numpy.random.random((32, 4)) * 4 - 2
     # outputs = numpy.array([[0], [0], [1], [1], [2], [2], [1], [1]])
-    outputs = 0.7 * inputs ** 2 - 2 * inputs + 1
+    outputs = 0.7 * inputs ** 2 - 3 * inputs + 4
     print(inputs, outputs)
     # outputs = numpy.array([[3], [1], [54], [-20], [-115], [20]])
     neuralLenArray = numpy.array([len(outputs[0])])
@@ -146,8 +146,8 @@ def test1():
     nnet.train(inputs, outputs, times=1000)
     print('self.step = %d, cost = %f, studyRate = %f' % (nnet.step, nnet.oldCost, nnet.netEnd.lr))
     nnet.printSelf()
-    print(nnet.netEnd.outputs)
-    print(outputs)
+    # print(nnet.netEnd.outputs)
+    # print(outputs)
     # print(neuralNetwork.getCost(nnet.netEnd.outputs, outputs))
 
     print(neuralNetwork.getCost(nnet.netEnd.outputs, outputs))

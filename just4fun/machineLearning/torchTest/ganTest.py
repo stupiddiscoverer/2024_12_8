@@ -143,6 +143,7 @@ def adversarialTrain():
         dis_loss = 0.0
         mosaic = nn.functional.one_hot(torch.ones(batchSize, dtype=torch.long) * 10, num_classes=11).float().to(device)
         # print(mosaic)
+        # quit()
         count = 0
         for i, data in enumerate(trainloader, 0):
             images, labels = data
@@ -241,6 +242,8 @@ def testDiscriminator():
 
 
 def testGan(ganPth='gan_net.pth', disPth='dis_net.pth'):
+    ganNet1.to(device)
+    disNet1.to(device)
     ganNet1.load_state_dict(torch.load(ganPth))
     disNet1.load_state_dict(torch.load(disPth))
     for i, data in enumerate(trainloader, 0):
@@ -271,7 +274,7 @@ def testGan(ganPth='gan_net.pth', disPth='dis_net.pth'):
 if __name__ == '__main__':
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     # print(torch.rand((1, 11)) / 10)
-    adversarialTrain()
+    # adversarialTrain()
     # testGan()
     # trainDiscriminator()
     # onlyGanTrain()

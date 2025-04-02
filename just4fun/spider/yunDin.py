@@ -26,10 +26,9 @@ class Hero:
     isChosen = 0
     price = 0
 
-    def __init__(self, name='', title='', price=0):
+    def __init__(self, name='', price=0):
         self.price = price
         self.name = name
-        self.title = title
         self.jobIndexes = []
         self.jobs = []
 
@@ -37,7 +36,7 @@ class Hero:
         self.jobs.append(job)
 
     def printSelf(self):
-        print(self.price, self.name, self.title, self.jobs)
+        print(self.price, self.name, self.jobs)
 
     def initialJobIndexes(self, synergies):
         for j in self.jobs:
@@ -81,9 +80,9 @@ def extractHeros(html=''):
     soup = BeautifulSoup(html, 'html.parser')
     elements = soup.select(".champion-item-big")
     for e in elements:
-        title, name = e.select(".name")[0].text.strip().split(' ')
+        name = e.select(".name")[0].text.strip()
         price = int(e.select(".price")[0].text.strip()[0:2])
-        hero = Hero(name, title, price)
+        hero = Hero(name, price)
         jobs = e.select(".race-job-name")
         for j in jobs:
             hero.addJob(j.text.strip())
@@ -366,23 +365,27 @@ def findAllSameSynergyHero():
 
 
 def start():
-    # print(synergies[12].name, synergies[12].nums)
-
     for i in range(len(synergies) - 1, -1, -1):  # 倒序删除不会影响前面的序号
         s = synergies[i]
-        s.initialHeroIndexes()
-        if len(s.heroIndexes) <= 1:
+        if len(s.nums) == 1 and s.nums[0] == 1:
             del synergies[i]
             # synergies.remove(s)
             continue
-        print(i, s.name, s.heroIndexes, s.nums)
-    print(len(synergies))
+    print('len(synergies) = ' + str(len(synergies)))
     print("------------------------------------")
     for i in range(len(heroes)-1, -1, -1):
         h = heroes[i]
         if len(h.jobs) <= 1:
             heroes.remove(h)
             continue
+    print('len(heroes) = ' + str(len(heroes)))
+    print("------------------------------------")
+    for i in range(len(synergies)):
+        s = synergies[i]
+        s.initialHeroIndexes()
+        print(i, s.name, s.heroIndexes, s.nums)
+    for i in range(len(heroes)):
+        h = heroes[i]
         h.initialJobIndexes(synergies)
         print(i, h.name, h.jobIndexes)
 
@@ -409,9 +412,4 @@ if __name__ == '__main__':
     # C(4, [0]*4)
     perfectCombSmart(n=perfect_num)
     print(len(perfect_list))
-    print(xx)
-    # printIfPerfect([0,1,3,14,31,49,53,56], {})
-    # ii = 0
-    # for h in heroes:
-    #     print(ii, h.name)
-    #     ii+=1
+    # print(xx)

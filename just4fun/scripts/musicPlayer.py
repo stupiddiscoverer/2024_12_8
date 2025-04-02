@@ -179,10 +179,10 @@ def play_music(playlist, path='.'):
         process = subprocess.Popen(["ffplay", "-autoexit", music_path],
                                    stdin=subprocess.PIPE,  stdout=subprocess.DEVNULL)
         ctrl = False
-        next_vid = True
+        next_music = True
         try:
             while process.poll() is None:
-                next_vid = True
+                next_music = True
                 key_time = monitor.key_queue.get()
                 if key_time is None:
                     continue
@@ -204,7 +204,7 @@ def play_music(playlist, path='.'):
                         process.terminate()
                         process.wait(0.1)
                         playlist.delete_current()
-                        next_vid = False
+                        next_music = False
                         break
                     if key_to_str(Key.insert) == key_time.key:
                         print('like')
@@ -217,12 +217,12 @@ def play_music(playlist, path='.'):
                     break
                 if 'b' == key_time.key:
                     print('back')
-                    next_vid = False
+                    next_music = False
                     process.terminate()
                     playlist.prev_music()
                     break
             print('...........')
-            if next_vid:
+            if next_music:
                 process.terminate()
                 process.wait(0.1)
                 playlist.next_music()

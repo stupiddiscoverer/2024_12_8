@@ -19,10 +19,9 @@ screen = pygame.display.set_mode((WIDTH, HEIGHT))
 clock = pygame.time.Clock()
 
 
-# Deep Q-Network (DQN) Model
-class DQN(nn.Module):
+class FcNet(nn.Module):
     def __init__(self, state_size, action_size):
-        super(DQN, self).__init__()
+        super(FcNet, self).__init__()
         self.fc1 = nn.Linear(state_size, 24)
         self.fc2 = nn.Linear(24, 24)
         self.fc3 = nn.Linear(24, action_size)
@@ -42,16 +41,16 @@ class Agent:
         self.gamma = 0.95
         self.epsilon = 1.0
         self.epsilon_min = 0.01
-        self.epsilon_decay = 0.995
+        self.epsilon_decay = 0.99
         self.learning_rate = 0.001
-        self.model = DQN(state_size, action_size)
+        self.model = FcNet(state_size, action_size)
         self.optimizer = optim.Adam(self.model.parameters(), lr=self.learning_rate)
 
     def remember(self, state, action, reward, next_state, done):
         self.memory.append((state, action, reward, next_state, done))
 
-    def act(self, state):
-        if np.random.rand() <= self.epsilon:
+    def act(self, state, training=True):
+        if training and np.random.rand() <= self.epsilon:
             return random.randrange(self.action_size)
         state = torch.FloatTensor(state).unsqueeze(0)
         with torch.no_grad():
@@ -114,10 +113,11 @@ class Game:
             done = True
 
         state = [self.player_x / WIDTH, self.obstacle_x / WIDTH, self.obstacle_y / HEIGHT]
-        reward = 1 if not done else -10
-        return np.array(state), reward, done
+        loss = 1 if not done else -20
+        return np.array(state), loss, done
 
     def render(self):
+        pygame.event.pump()
         screen.fill((0, 0, 0))
         pygame.draw.rect(screen, (0, 255, 0), (self.player_x, HEIGHT - PLAYER_HEIGHT, PLAYER_WIDTH, PLAYER_HEIGHT))
         pygame.draw.rect(screen, (255, 0, 0), (self.obstacle_x, self.obstacle_y, OBSTACLE_WIDTH, OBSTACLE_HEIGHT))
@@ -137,6 +137,7 @@ agent.load_model(model_filepath)
 
 
 def train():
+    scores = []
     for episode in range(episodes):
         state = np.array([game.player_x / WIDTH, game.obstacle_x / WIDTH, game.obstacle_y / HEIGHT])
         done = False
@@ -158,7 +159,7 @@ def train():
         # Only render every 100 episodes after the game ends
         if episode % 100 == 0:
             render_game()
-
+        scores.append(game.score)
         game.__init__()
 
 
@@ -168,13 +169,13 @@ def render_game():
     state = np.array([game.player_x / WIDTH, game.obstacle_x / WIDTH, game.obstacle_y / HEIGHT])
     done = False
     while not done:
-        pygame.event.pump()
-        action = agent.act(state)
+        action = agent.act(state, False)
         state, _, done = game.step(action)
         game.render()
         clock.tick(60)
 
 
-train()
-# render_game()
+# train()
+
+render_game()
 pygame.quit()

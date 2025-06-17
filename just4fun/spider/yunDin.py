@@ -162,24 +162,23 @@ def printIfPerfect(hero_list=None, synergy_set=None):
             perfect_list.add(hero_list)
         # else:
             xx += 1
-            text = str(hero_list) + '\n' + text
             print(text, end='')
             with open("perfect_" + str(perfect_num) + '.txt', 'a') as f:
                 f.write(text)
 
 
 # 谁能想到，多年前我竟然能写出如此简洁的组合函数，虽然是用递归
-def C(n, nList, i=0, l=0):
+def Cmn(n, nList, m, i=0, l=0):
     if n<1:
         print(nList)
         return
-    while i<8:
+    while i<m:
         nList[l] = i
         i += 1
-        C(n-1,nList,i, l+1)  # 保持n + l = n
+        C(n-1,nList, m, i, l+1)  # 保持n + l = n
     return
 
-
+# C(4, [0]*4, 5)
 def perfectComb(n=8):
     if n < 1:
         return
@@ -396,20 +395,20 @@ if __name__ == '__main__':
     heroes = [Hero]
     heroes.pop()
     synergies = [Synergy]
-    synergies.pop()
-    with open("yundinHero.html", 'r') as f:
-        page_content = f.read()
-        extractHeros(page_content)
-    with open("yundinSynergy.html", "r") as f:
-        html = f.read()
-        extractSynergies(html)
-    start()
+    # synergies.pop()
+    # with open("yundinHero.html", 'r') as f:
+    #     page_content = f.read()
+    #     extractHeros(page_content)
+    # with open("yundinSynergy.html", "r") as f:
+    #     html = f.read()
+    #     extractSynergies(html)
+    # start()
     same_list = []
-    findAllSameSynergyHero()
-    print(same_list)
+    # findAllSameSynergyHero()
+    # print(same_list)
     perfect_num = 8
     # perfectComb(perfect_num)
-    # C(4, [0]*4)
-    perfectCombSmart(n=perfect_num)
-    print(len(perfect_list))
+    Cmn(4, [0]*4, 6)
+    # perfectCombSmart(n=perfect_num)
+    # print(len(perfect_list))
     # print(xx)

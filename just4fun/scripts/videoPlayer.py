@@ -167,7 +167,9 @@ def play_video(playlist, path='.'):
     while playlist.current:
         video_path = os.path.join(path, playlist.current.video)
         print(f"Playing: {video_path}")  # 调试信息
-        process = subprocess.Popen(["ffplay", "-autoexit", "-alwaysontop", "-fs", video_path],
+        process = subprocess.Popen(["ffplay", "-autoexit",
+                                    # "-alwaysontop",
+                                    "-fs", video_path],
                                    stdin=subprocess.PIPE,  stdout=subprocess.DEVNULL)
         ctrl = False
         next_vid = True

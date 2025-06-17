@@ -235,7 +235,7 @@ if __name__ == '__main__':
     path = os.path.abspath('.')
     music_files = get_music_files(path)
     if len(music_files) < 1:
-        path = 'C:\\Users\\张三\\Music\\7.怀旧情怀金典200首'
+        path = 'C:\\Users\\张三\\Music\\1抖音流行热歌精选榜900首'
         music_files = get_music_files(path)
     random.shuffle(music_files)
     playlist = DoublyLinkedList(music_files)

@@ -54,13 +54,14 @@ def printComb(selected):
         print(selected[i].name + ' ', end='')
     print()
 
+
 def selectAndCalculate(plantPot, perfects, lessPerfects, selected, n=3):
     if n > 0:
         if len(selected) == 0:
             rangeStart = 0
         else:
             rangeStart = plantPot.index(selected[-1])
-        for i in range(rangeStart, len(plantPot) - n + 1):
+        for i in range(rangeStart, len(plantPot)):
             selected.append(plantPot[i])
             selectAndCalculate(plantPot, perfects, lessPerfects, selected, n-1)
             selected.pop()

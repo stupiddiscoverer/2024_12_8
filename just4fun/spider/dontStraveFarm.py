@@ -49,13 +49,13 @@ for i in range(0, 4):
         print(p.name + ' ', end='')
     print()
 
-def printComb(selected):
-    for i in range(3):
+def printComb(selected, N=3):
+    for i in range(N):
         print(selected[i].name + ' ', end='')
     print()
 
 
-def selectAndCalculate(plantPot, perfects, lessPerfects, selected, n=3):
+def selectAndCalculate(plantPot, perfects, lessPerfects, selected, n=3, N=3):
     if n > 0:
         if len(selected) == 0:
             rangeStart = 0
@@ -63,24 +63,26 @@ def selectAndCalculate(plantPot, perfects, lessPerfects, selected, n=3):
             rangeStart = plantPot.index(selected[-1])
         for i in range(rangeStart, len(plantPot)):
             selected.append(plantPot[i])
-            selectAndCalculate(plantPot, perfects, lessPerfects, selected, n-1)
+            selectAndCalculate(plantPot, perfects, lessPerfects, selected, n-1, N)
             selected.pop()
         return
     count = [0, 0, 0]
-    for i in range(3):
+    if N == 4 and selected[0] == selected[1] and selected[2] == selected[3]:
+        return
+    for i in range(N):
         for j in range(len(fertilizer)):
             count[j] += selected[i].nums[j]
     if count == [0, 0, 0]:
-        printComb(selected)
+        printComb(selected, N)
         perfects.append(selected)
-    else:
-        minus = 0
-        for i in range(3):
-            minus += (count[i] < 0) * count[i]
-        if minus >= -1:  # 竟然没有有一点瑕疵的组合
-            print(count, ' ', end='')
-            printComb(selected)
-            lessPerfects.append(selected)
+    # else:
+    #     minus = 0
+    #     for i in range(N):
+    #         minus += (count[i] < 0) * count[i]
+    #     if minus >= -1:  # 竟然没有有一点瑕疵的组合
+    #         print(count, ' ', end='')
+    #         printComb(selected, N)
+    #         lessPerfects.append(selected)
 
 
 for i in range(0, 4):
@@ -89,4 +91,8 @@ for i in range(0, 4):
     selected3 = []    # 一个地皮内最少3个同类植物，一共9个
     perfects = []
     lessPerfects = []
-    selectAndCalculate(plantPot, perfects, lessPerfects, selected3)
+    selectAndCalculate(plantPot, perfects, lessPerfects, selected3, 2, 2)
+    selectAndCalculate(plantPot, perfects, lessPerfects, selected3, 3, 3)
+    # selectAndCalculate(plantPot, perfects, lessPerfects, selected3, 4, 4)
+    # selectAndCalculate(plantPot, perfects, lessPerfects, selected3, 5, 5)
+    # print('---------------')

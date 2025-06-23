@@ -84,19 +84,18 @@ def decrypt_aes_128_cbc(key, iv, ciphertext):
 
 
 if __name__ == '__main__':
-    # for i in range(8, -3, -2):  # range(start, end, step) = for(i=start; (i-end)*step < 0; i+=step):
-    #     print(i)
-    # for i in range(8):  # default start=0, step=1
-    #     print(i)
-    # print(numpy.random.rand())
-    for i in range(3):
-        print(i)
-        print(ord("0"))
-    print([1]*4)
-    a = [0, 1, 2]
-    b = [0, 0, 0]
-    a[1] -= a[1]
-    a[2] -= a[2]
-    print(a)
-    print(a == b)
+    with open('spider/result.txt','r') as f:
+        lines = f.readlines()
+        i = 0
+        single = []
+        for line in lines:
+            if len(line) < 5:
+                print(line, end='')
+                continue
+            if single.__contains__(line):
+                print(line, end='')
+                continue
+            single.append(line)
+            i+=1
+            print(i, line, end='')
     # print(help(range))

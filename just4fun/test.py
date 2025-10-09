@@ -84,7 +84,7 @@ def decrypt_aes_128_cbc(key, iv, ciphertext):
 
 
 if __name__ == '__main__':
-    with open('spider/result.txt','r') as f:
+    with open('spider/result.txt', 'r') as f:
         lines = f.readlines()
         i = 0
         single = []

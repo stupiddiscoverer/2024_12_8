@@ -1,3 +1,5 @@
+import re
+
 from playwright.sync_api import sync_playwright
 from bs4 import BeautifulSoup
 
@@ -175,81 +177,20 @@ def Cmn(n, nList, m, i=0, l=0):
     while i<m:
         nList[l] = i
         i += 1
-        C(n-1,nList, m, i, l+1)  # 保持n + l = n
+        Cmn(n-1, nList, m, i, l+1)  # 保持n + l = n
     return
 
-# C(4, [0]*4, 5)
-def perfectComb(n=8):
-    if n < 1:
-        return
-    # 穷举法 C(60, 8) = 60*59*58*...*53 / (1*2*3*...*8) == 22亿,对所有组合判断是否完美
-    # [0,1,3,14,31,49,53,56]
-    list_len = len(heroes)
-    if list_len < n:
-        return
-    # 从0到listLen选择numToChose个数的所有可能选法，每个组合都执行func(该组合, kwargs)
-    chosen_list = [-1] * n
-    num = 0  # 已选择个数
-    back = 0
-    synergy_set = {}
-    while chosen_list[0] <= list_len - n:  # 人数满n人就判断是否是最后一个组合
-        if back == 1:  # 这种情况更多
-            delSynergy(synergy_set, heroes[chosen_list[num - 1]])
-            next_h = chosen_list[num - 1] + 1
-            if next_h >= list_len - n + num:
-                num -= 1
-                if num == 0 and chosen_list[0] == list_len - n:
-                    break
-                continue
-            chosen_list[num - 1] = next_h
-            addSynergy(synergy_set, heroes[next_h])
-            back = 0
-        else:
-            if num == 0:
-                next_h = chosen_list[0] + 1
-            else:
-                next_h = chosen_list[num - 1] + 1
-            if next_h > list_len - n + num:
-                back = 1
-                continue
-            chosen_list[num] = next_h
-            addSynergy(synergy_set, heroes[next_h])
-            num += 1
-        if num == n:
-            printIfPerfect(chosen_list, synergy_set)
-            back = 1
 
-
-def removeSame(list1, l1, list2remove):
+def removeSameAndMutual(list1, l1, list2remove):
     for i in range(l1):
         if list1[i] in list2remove:
             list2remove.remove(list1[i])
-
-
-def getLowest(hero_list, hl, s_index):
-    # 次序颠倒的情况只会出现在分2次选择同一个羁绊中的英雄
-    # 那就要每次选择时，保证次序不会颠倒，
-    max = -1
-    for i in range(hl):
-        h = hero_list[i]
-        for j in heroes[h].jobIndexes:
-            if j == s_index and max < h:
-                perfect = 1
-                for j in heroes[h].jobIndexes:
-                    if j > s_index:
-                        perfect = 0
-                        break
-                if perfect == 1:
-                    max = h
-                break
-    return max
-
-
-def removeLowIndex(lowest, h_list):
-    for i in range(len(h_list)):
-        if h_list[i] == lowest:
-            del h_list[:i + 1]
-            return
+        if heroes[list1[i]].name.__contains__(mutual_name):
+            index = len(list2remove) - 1
+            while index >= 0:
+                if heroes[list2remove[index]].name.__contains__(mutual_name):
+                    list2remove.remove(list2remove[index])
+                index -= 1
 
 
 def selectAddDo(h_list, num_to_chose, func, n, synergy_set, first, hero_list, hl):
@@ -311,20 +252,16 @@ def perfectCombSmart(n=8, synergy_set=None, first=0, hero_list=None, hl=0):
         for i in range(first, len(synergies)):
             s = synergies[i]
             for ns in s.nums:
-                lowest = -1
                 if i in synergy_set:  # 增加的英雄序号不能低于已存在的同羁绊的英雄序号
                     if synergy_set[i] >= ns:
                         continue
                     s_num = ns - synergy_set[i]
-                    lowest = getLowest(hero_list, hl, i)
                 else:
                     s_num = ns
                 if s_num + hl > n:
                     break
                 h_list = s.heroIndexes.copy()
-                # removeLowIndex(lowest, h_list)
-                # 找到所有相同羁绊的英雄组，当多个英雄出现时，必须按顺序组合，否则跳过
-                removeSame(hero_list, hl, h_list)
+                removeSameAndMutual(hero_list, hl, h_list)
                 selectAddDo(h_list, s_num, perfectCombSmart, n, synergy_set, i, hero_list, hl)
                 break
     else:  # 优先补全羁绊
@@ -339,9 +276,7 @@ def perfectCombSmart(n=8, synergy_set=None, first=0, hero_list=None, hl=0):
                 if s_num + hl > n:
                     return
                 h_list = synergies[p].heroIndexes.copy()
-                lowest = getLowest(hero_list, hl, p)
-                # removeLowIndex(lowest, h_list)
-                removeSame(hero_list, hl, h_list)
+                removeSameAndMutual(hero_list, hl, h_list)
                 selectAddDo(h_list, s_num, perfectCombSmart, n, synergy_set, first, hero_list, hl)
                 break
 
@@ -389,12 +324,35 @@ def start():
         print(i, h.name, h.jobIndexes)
 
 
+def cheap_comb(n=7):
+    with open('perfect_' + str(n) + '.txt', 'r') as f:
+        lines = f.readlines()
+    pattern = r".*[^0-9][" + str(n-3) + r"-9]\b"
+    circle = 3
+    p = 0
+    newlines = []
+    for line in lines:
+        if circle == 3:
+            matches = re.findall(pattern, line)
+            if matches is None or len(matches) == 0:
+                p = 1
+        if p == 1:
+            print(line, end='')
+            newlines.append(line)
+        circle -= 1
+        if circle == 0:
+            circle = 3
+            p = 0
+    with open('cheap' + str(n) + '.txt', 'w') as f:
+        f.writelines(newlines)
+
+
 if __name__ == '__main__':
     # downloadHtmlAndSave("https://lol.qq.com/tft/#/champion", "yundinHero.html")
     # downloadHtmlAndSave("https://lol.qq.com/tft/#/synergy", "yundinSynergy.html")
-    heroes = [Hero]
-    heroes.pop()
-    synergies = [Synergy]
+    # heroes = [Hero]
+    # heroes.pop()
+    # synergies = [Synergy]
     # synergies.pop()
     # with open("yundinHero.html", 'r') as f:
     #     page_content = f.read()
@@ -403,12 +361,13 @@ if __name__ == '__main__':
     #     html = f.read()
     #     extractSynergies(html)
     # start()
-    same_list = []
-    # findAllSameSynergyHero()
-    # print(same_list)
-    perfect_num = 8
-    # perfectComb(perfect_num)
-    Cmn(4, [0]*4, 6)
+    # same_list = []
+    # mutual_name = '李青'
+    # perfect_num = 7
+    # # findAllSameSynergyHero()
+    # # print(same_list)
+    # # Cmn(4, [0]*4, 6)
     # perfectCombSmart(n=perfect_num)
     # print(len(perfect_list))
+    cheap_comb()
     # print(xx)

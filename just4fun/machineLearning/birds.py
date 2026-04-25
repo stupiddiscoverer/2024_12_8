@@ -1,10 +1,10 @@
-import numpy as np
-from numba import cuda
-import matplotlib.pyplot as plt
-from matplotlib.animation import FuncAnimation
 import math
+
+import matplotlib.pyplot as plt
+import numpy as np
+from matplotlib.animation import FuncAnimation
 from matplotlib.collections import LineCollection
-import matplotlib.font_manager as fm
+from numba import cuda
 
 # 设置中文字体
 plt.rcParams['font.sans-serif'] = ['SimHei', 'Microsoft YaHei', 'DejaVu Sans']  # 用来正常显示中文标签

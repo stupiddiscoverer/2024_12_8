@@ -82,20 +82,80 @@ def decrypt_aes_128_cbc(key, iv, ciphertext):
     decrypted = cipher.decrypt(ciphertext)
     return decrypted.rstrip(b"\0")  # 去掉填充的 \0
 
+import torch
+
+def visualize_computation_graph():
+    """
+    正确的 detach() 行为演示
+    """
+    # 创建计算图
+    a = torch.tensor([2.0], requires_grad=True)
+    b = a * 3
+    c = b ** 2
+    d = c.detach()  # d 从计算图中分离，不再需要梯度
+    e = d + 5  # e 基于 d 创建，d 不需要梯度，所以 e 也不需要梯度
+
+    print(f"a.requires_grad: {a.requires_grad}")  # True
+    print(f"b.requires_grad: {b.requires_grad}")  # True
+    print(f"c.requires_grad: {c.requires_grad}")  # True
+    print(f"d.requires_grad: {d.requires_grad}")  # False ← detach 后不再需要梯度
+    print(f"e.requires_grad: {e.requires_grad}")  # False ← 继承自 d
+
+    print(f"c.grad_fn: {c.grad_fn}")  # 有 grad_fn (PowBackward0)
+    print(f"d.grad_fn: {d.grad_fn}")  # None ← detach 后 grad_fn 为 None
+    print(f"e.grad_fn: {e.grad_fn}")  # None ← 因为没有梯度追踪
+
+    # 尝试反向传播
+    try:
+        e.sum().backward()  # 这会失败，因为 e 不需要梯度
+    except RuntimeError as e:
+        print(f"错误: {e}")
+
+
+def explain_lbfgs_math():
+    """
+    解释 LBFGS 的数学原理
+    """
+    print("LBFGS 的核心思想:")
+    print("=" * 50)
+
+    print("1. 梯度下降 (SGD):")
+    print("   x_{k+1} = x_k - α * ∇f(x_k)")
+    print("   只用一阶信息，收敛慢")
+
+    print("\n2. 牛顿法:")
+    print("   x_{k+1} = x_k - [∇²f(x_k)]⁻¹ * ∇f(x_k)")
+    print("   用海森矩阵，收敛快但计算量大 O(n³)")
+
+    print("\n3. LBFGS (折中方案):")
+    print("   • 用过去 m 步的梯度信息近似海森矩阵")
+    print("   • 存储量 O(mn) 而不是 O(n²)")
+    print("   • 计算量 O(mn) 而不是 O(n³)")
+    print("   • 既快又省内存")
+
+
+def derivative_xx_method1():
+    """
+    方法1：对数求导法
+    """
+    print("令 y = x^x")
+    print("\n步骤1：两边取自然对数")
+    print("  ln y = ln(x^x) = x * ln x")
+
+    print("\n步骤2：两边对x求导")
+    print("  (1/y) * y' = ln x + x * (1/x)")
+    print("  (1/y) * y' = ln x + 1")
+
+    print("\n步骤3：解出 y'")
+    print("  y' = y * (ln x + 1)")
+    print("  y' = x^x * (ln x + 1)")
+
+    print("\n最终结果：")
+    print("  d/dx (x^x) = x^x * (ln x + 1)")
+
 
 if __name__ == '__main__':
-    with open('spider/result.txt', 'r') as f:
-        lines = f.readlines()
-        i = 0
-        single = []
-        for line in lines:
-            if len(line) < 5:
-                print(line, end='')
-                continue
-            if single.__contains__(line):
-                print(line, end='')
-                continue
-            single.append(line)
-            i+=1
-            print(i, line, end='')
+    visualize_computation_graph()
+    # explain_lbfgs_math()
+    # derivative_xx_method1()
     # print(help(range))
